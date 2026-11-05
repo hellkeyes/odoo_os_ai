@@ -3,12 +3,13 @@
 # License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl).
 {
     'name': 'OS AI Base',
-    'version': '19.0.1.1.0',
+    'version': '19.0.1.2.0',
     'category': 'Technical',
-    'summary': 'AI provider management, capability routing, and logging via litellm',
+    'summary': 'AI gateway, provider management, capability routing, and logging via litellm',
     'description': """
-        Base module to configure AI Providers (OpenAI, Gemini, Anthropic, etc),
-        track logs (prompts, responses, tokens, cost), and manage reusable prompt templates.
+        AI Gateway and base module to configure AI Providers (OpenAI, Gemini, Anthropic, etc),
+        track logs (prompts, responses, tokens, cost), manage reusable prompt templates,
+        and provide a unified AI Gateway with intelligent routing and automatic fallback.
 
         Requires the `litellm` Python package, version 1.104.3 or newer.
     """,
@@ -21,11 +22,12 @@
         'python': ['litellm>=1.104.3'],
     },
     'data': [
-
         'security/ir.model.access.csv',
         'views/ai_provider_views.xml',
+        'views/ai_feature_views.xml',
         'views/ai_prompt_views.xml',
         'views/ai_log_views.xml',
+        'views/ai_dashboard.xml',
     ],
     'installable': True,
     'application': True,

@@ -5,3 +5,5 @@
 from . import ai_provider
 from . import ai_log
 from . import ai_prompt
+from . import ai_feature
+from . import ai_gateway

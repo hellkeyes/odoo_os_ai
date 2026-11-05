@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ============================================================ -->
+    <!-- AI Feature — Form View                                        -->
+    <!-- ============================================================ -->
+    <record id="view_ai_feature_form" model="ir.ui.view">
+        <field name="name">ai.feature.form</field>
+        <field name="model">os.ai.feature</field>
+        <field name="arch" type="xml">
+            <form string="AI Feature">
+                <header>
+                    <button name="deactivate_feature" type="object" string="Deactivate"
+                            class="btn-secondary" invisible="not active or is_deleted"/>
+                    <button name="restore_feature" type="object" string="Restore"
+                            class="btn-primary" invisible="active and not is_deleted"/>
+                    <button name="delete_feature" type="object" string="Delete"
+                            class="btn-danger" invisible="is_deleted"
+                            confirm="Soft-delete this AI feature? Historical audit logs will be kept."/>
+                </header>
+                <sheet>
+                    <widget name="web_ribbon" title="Deleted" bg_color="text-bg-danger" invisible="not is_deleted"/>
+                    <widget name="web_ribbon" title="Inactive" bg_color="text-bg-warning" invisible="active or is_deleted"/>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="e.g. Lead Enrichment &amp; Scoring"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="Identity">
+                            <field name="feature_type" placeholder="e.g. crm.lead_enrichment"/>
+                            <field name="module" placeholder="e.g. crm"/>
+                            <field name="operation"/>
+                            <field name="required_capability"/>
+                        </group>
+                        <group string="Configuration">
+                            <field name="default_complexity"/>
+                            <field name="sequence"/>
+                            <field name="active" invisible="1"/>
+                            <field name="is_deleted" invisible="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Keywords &amp; Routing" name="keywords">
+                            <group>
+                                <field name="feature_keywords"
+                                       placeholder="e.g. summarize, recap, brief, tldr (used to auto-detect this feature from user prompts)"/>
+                                <field name="complexity_keywords"
+                                       placeholder="e.g. exhaustive, full audit, line-by-line (escalates requests to High complexity)"/>
+                            </group>
+                        </page>
+                        <page string="Prompts &amp; Guidelines" name="prompts">
+                            <group>
+                                <field name="system_prompt"
+                                       placeholder="Default system instructions sent to the AI model for this feature..."/>
+                                <field name="description"
+                                       placeholder="Documentation and purpose of this feature..."/>
+                                <field name="complexity_description"
+                                       placeholder="Examples of low, medium, and high prompts for this feature..."/>
+                            </group>
+                        </page>
+                        <page string="Audit &amp; Metadata" name="audit">
+                            <group>
+                                <field name="create_date" readonly="1"/>
+                                <field name="write_date" readonly="1"/>
+                                <field name="deleted_at" invisible="not is_deleted" readonly="1"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- AI Feature — Tree / List View                                 -->
+    <!-- ============================================================ -->
+    <record id="view_ai_feature_tree" model="ir.ui.view">
+        <field name="name">ai.feature.tree</field>
+        <field name="model">os.ai.feature</field>
+        <field name="arch" type="xml">
+            <list string="AI Features">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="feature_type"/>
+                <field name="module"/>
+                <field name="operation"/>
+                <field name="required_capability"/>
+                <field name="default_complexity"/>
+                <field name="active" widget="boolean_toggle"/>
+                <field name="is_deleted" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- AI Feature — Search View                                      -->
+    <!-- ============================================================ -->
+    <record id="view_ai_feature_search" model="ir.ui.view">
+        <field name="name">ai.feature.search</field>
+        <field name="model">os.ai.feature</field>
+        <field name="arch" type="xml">
+            <search string="Search AI Features">
+                <field name="name"/>
+                <field name="feature_type"/>
+                <field name="module"/>
+                <filter string="Active" name="filter_active" domain="[('active', '=', True), ('is_deleted', '=', False)]"/>
+                <filter string="Inactive" name="filter_inactive" domain="[('active', '=', False), ('is_deleted', '=', False)]"/>
+                <filter string="Deleted" name="filter_deleted" domain="[('is_deleted', '=', True)]"/>
+                <separator/>
+                <filter string="LLM Operation" name="filter_llm" domain="[('operation', '=', 'llm')]"/>
+                <filter string="Decision Operation" name="filter_decision" domain="[('operation', '=', 'decision')]"/>
+                <separator/>
+                <filter string="Low Complexity" name="filter_low" domain="[('default_complexity', '=', 'low')]"/>
+                <filter string="Medium Complexity" name="filter_medium" domain="[('default_complexity', '=', 'medium')]"/>
+                <filter string="High Complexity" name="filter_high" domain="[('default_complexity', '=', 'high')]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Module" name="group_module" context="{'group_by': 'module'}"/>
+                    <filter string="Operation" name="group_operation" context="{'group_by': 'operation'}"/>
+                    <filter string="Complexity" name="group_complexity" context="{'group_by': 'default_complexity'}"/>
+                    <filter string="Capability" name="group_capability" context="{'group_by': 'required_capability'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- AI Feature — Action                                           -->
+    <!-- ============================================================ -->
+    <record id="action_ai_feature" model="ir.actions.act_window">
+        <field name="name">AI Features</field>
+        <field name="res_model">os.ai.feature</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_ai_feature_search"/>
+        <field name="context">{'search_default_filter_active': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Register your first AI Feature
+            </p>
+            <p>
+                AI features represent business capabilities (e.g. Lead Enrichment,
+                Summarization) declared by Odoo modules and executed via the AI Gateway.
+            </p>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- Menu Item                                                     -->
+    <!-- ============================================================ -->
+    <menuitem id="menu_ai_feature"
+              name="AI Features"
+              parent="menu_os_ai_root"
+              action="action_ai_feature"
+              sequence="15"/>
+
+</odoo>
+

@@ -36,6 +36,7 @@
                             <field name="temperature_mode"/>
                             <field name="temperature" invisible="temperature_mode != 'custom'"/>
                             <field name="reasoning_effort"/>
+                            <field name="complexity_tier"/>
                             <field name="structured_output"/>
                             <field name="max_output_tokens"/>
                             <field name="timeout"/>
@@ -85,6 +86,7 @@
                 <field name="name"/>
                 <field name="provider_type"/>
                 <field name="model_name"/>
+                <field name="complexity_tier" optional="show"/>
                 <field name="model_status_message" optional="show" decoration-warning="model_status_message"/>
                 <field name="active" column_invisible="True"/>
                 <field name="capable_text" optional="show"/>

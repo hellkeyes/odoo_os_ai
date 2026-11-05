@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ============================================================ -->
+    <!-- AI Analytics / Dashboard — Graph View                         -->
+    <!-- ============================================================ -->
+    <record id="view_ai_log_graph" model="ir.ui.view">
+        <field name="name">ai.log.graph</field>
+        <field name="model">os.ai.log</field>
+        <field name="arch" type="xml">
+            <graph string="AI Requests &amp; Cost Analysis" sample="1">
+                <field name="feature_type"/>
+                <field name="response_cost" type="measure"/>
+                <field name="total_tokens" type="measure"/>
+                <field name="duration" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- AI Analytics / Dashboard — Pivot View                         -->
+    <!-- ============================================================ -->
+    <record id="view_ai_log_pivot" model="ir.ui.view">
+        <field name="name">ai.log.pivot</field>
+        <field name="model">os.ai.log</field>
+        <field name="arch" type="xml">
+            <pivot string="AI Gateway Metrics" sample="1">
+                <field name="feature_type" type="row"/>
+                <field name="provider_id" type="row"/>
+                <field name="complexity" type="col"/>
+                <field name="response_cost" type="measure"/>
+                <field name="total_tokens" type="measure"/>
+                <field name="duration" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- AI Dashboard — Action                                         -->
+    <!-- ============================================================ -->
+    <record id="action_ai_dashboard" model="ir.actions.act_window">
+        <field name="name">AI Dashboard &amp; Analytics</field>
+        <field name="res_model">os.ai.log</field>
+        <field name="view_mode">graph,pivot,list,form</field>
+        <field name="search_view_id" ref="view_ai_log_search"/>
+        <field name="context">{'search_default_group_feature': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No AI activity to display yet
+            </p>
+            <p>
+                As your Odoo modules make requests through the AI Gateway,
+                performance metrics, token consumption, costs, complexity ratings,
+                and fallback rates will be visualized here.
+            </p>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- Menu Item                                                     -->
+    <!-- ============================================================ -->
+    <menuitem id="menu_ai_dashboard"
+              name="Dashboard"
+              parent="menu_os_ai_root"
+              action="action_ai_dashboard"
+              sequence="5"/>
+
+</odoo>
+
