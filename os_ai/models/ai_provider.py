@@ -206,6 +206,15 @@ class AiProvider(models.Model):
         help="Sent only when set. The accepted values depend on the model; leave empty "
              "to use the model default.",
     )
+    complexity_tier = fields.Selection([
+        ('low', 'Low'),
+        ('medium', 'Medium'),
+        ('high', 'High'),
+    ], string='Complexity Tier',
+        help="Leave empty to handle all complexity levels. "
+             "Set to restrict this provider to a specific tier. "
+             "The gateway always falls back to unset providers if no tier match found.",
+    )
     max_output_tokens = fields.Integer(
         'Max Output Tokens',
         help="Upper bound for the answer (0 = model default). Answers cut by this limit are "

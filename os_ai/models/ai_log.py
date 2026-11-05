@@ -16,14 +16,50 @@ class AiLog(models.Model):
     _order = 'create_date desc, id desc'
 
     # -- Context --
-    model_name = fields.Char('Model', required=True, index=True)
-    field_name = fields.Char('Field', required=True, index=True)
+    model_name = fields.Char('Model', index=True)
+    field_name = fields.Char('Field', index=True)
     res_ids = fields.Char(
         'Record IDs',
         help="JSON list of record IDs involved in this LLM call",
     )
     provider_id = fields.Many2one('os.ai.provider', string='Provider', ondelete='set null')
     provider_model = fields.Char('LLM Model', help="Model identifier sent to litellm")
+
+    # -- Gateway Context --
+    feature_id = fields.Many2one(
+        'os.ai.feature', string='AI Feature', ondelete='set null',
+        help="Gateway feature that triggered this call.",
+    )
+    feature_type = fields.Char(
+        'Feature Type', index=True,
+        help="Preserved for audit even if the feature is later deleted.",
+    )
+    complexity = fields.Selection([
+        ('low', 'Low'),
+        ('medium', 'Medium'),
+        ('high', 'High'),
+    ], string='Evaluated Complexity')
+    complexity_score = fields.Integer(
+        'Complexity Score',
+        help="Raw weighted score that produced the complexity tier.",
+    )
+    is_fallback = fields.Boolean('Is Fallback Attempt', default=False)
+    fallback_reason = fields.Char(
+        'Fallback Reason',
+        help="Why the previous provider failed (error_kind + message).",
+    )
+    attempt_number = fields.Integer(
+        'Attempt Number', default=1,
+        help="1 = primary attempt, 2+ = fallback attempt.",
+    )
+    request_uid = fields.Many2one(
+        'res.users', string='Requested By',
+        help="User who triggered the gateway call.",
+    )
+    request_context = fields.Text(
+        'Request Context',
+        help="JSON metadata passed by the developer via context_data.",
+    )
 
     # -- Prompts --
     system_prompt = fields.Text('System Prompt')
